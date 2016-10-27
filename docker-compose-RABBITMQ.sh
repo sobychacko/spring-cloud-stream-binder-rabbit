@@ -2,6 +2,21 @@
 
 #SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=9672"
 
+
+function netcat_port() {
+    local PASSED_HOST="${2:-$HEALTH_HOST}"
+    local READY_FOR_TESTS=1
+    for i in $( seq 1 "${RETRIES}" ); do
+        sleep "${WAIT_TIME}"
+        nc -v -w 1 ${PASSED_HOST} $1 && READY_FOR_TESTS=0 && break
+        echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
+    done
+    return ${READY_FOR_TESTS}
+}
+
+export -f netcat_port
+
+
 dockerComposeFile="docker-compose-RABBITMQ.yml"
 docker-compose -f $dockerComposeFile kill
 docker-compose -f $dockerComposeFile build
@@ -26,13 +41,3 @@ if [[ "${READY_FOR_TESTS}" == "no" ]] ; then
     exit 1
 fi
 
-function netcat_port() {
-    local PASSED_HOST="${2:-$HEALTH_HOST}"
-    local READY_FOR_TESTS=1
-    for i in $( seq 1 "${RETRIES}" ); do
-        sleep "${WAIT_TIME}"
-        nc -v -w 1 ${PASSED_HOST} $1 && READY_FOR_TESTS=0 && break
-        echo "Fail #$i/${RETRIES}... will try again in [${WAIT_TIME}] seconds"
-    done
-    return ${READY_FOR_TESTS}
-}
