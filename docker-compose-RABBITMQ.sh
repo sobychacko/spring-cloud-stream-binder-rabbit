@@ -15,7 +15,7 @@ function netcat_port() {
 }
 
 export -f netcat_port
-
+SHOULD_START_RABBIT="${SHOULD_START_RABBIT:-yes}"
 
 dockerComposeFile="docker-compose-RABBITMQ.yml"
 docker-compose -f $dockerComposeFile kill
