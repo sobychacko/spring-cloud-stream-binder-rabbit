@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HEALTH_HOST="${HEALTH_HOST:-127.0.0.1}"
+HEALTH_HOST="${HEALTH_HOST:-localhost}"
 SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=5672"
 
 function netcat_port() {
