@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=9672"
-
+HEALTH_HOST="${HEALTH_HOST:-127.0.0.1}"
+SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=5672"
 
 function netcat_port() {
     local PASSED_HOST="${2:-$HEALTH_HOST}"
@@ -29,7 +29,6 @@ fi
 READY_FOR_TESTS="no"
 PORT_TO_CHECK=5672
 
-HEALTH_HOST="${HEALTH_HOST:-localhost}"
 WAIT_TIME="${WAIT_TIME:-5}"
 RETRIES="${RETRIES:-70}"
 
