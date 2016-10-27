@@ -1,10 +1,14 @@
 #!/bin/bash
 
-HEALTH_HOST="${HEALTH_HOST:-localhost}"
-SYSTEM_PROPS="-DRABBIT_HOST=${HEALTH_HOST} -Dspring.rabbitmq.port=5672"
+LOCAL_HOST="${LOCAL_HOST:-localhost}"
+SHOULD_START_RABBIT="${SHOULD_START_RABBIT:-yes}"
+PORT_TO_CHECK=5672
+
+WAIT_TIME="${WAIT_TIME:-5}"
+RETRIES="${RETRIES:-70}"
 
 function netcat_port() {
-    local PASSED_HOST="${2:-$HEALTH_HOST}"
+    local PASSED_HOST="${2:-$LOCAL_HOST}"
     local READY_FOR_TESTS=1
     for i in $( seq 1 "${RETRIES}" ); do
         sleep "${WAIT_TIME}"
@@ -15,7 +19,6 @@ function netcat_port() {
 }
 
 export -f netcat_port
-SHOULD_START_RABBIT="${SHOULD_START_RABBIT:-yes}"
 
 dockerComposeFile="docker-compose-RABBITMQ.yml"
 docker-compose -f $dockerComposeFile kill
@@ -27,10 +30,6 @@ if [[ "${SHOULD_START_RABBIT}" == "yes" ]] ; then
 fi
 
 READY_FOR_TESTS="no"
-PORT_TO_CHECK=5672
-
-WAIT_TIME="${WAIT_TIME:-5}"
-RETRIES="${RETRIES:-70}"
 
 echo "Waiting for RabbitMQ to boot for [$(( WAIT_TIME * RETRIES ))] seconds"
 netcat_port $PORT_TO_CHECK && READY_FOR_TESTS="yes"
